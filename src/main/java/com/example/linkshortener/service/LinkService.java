@@ -35,6 +35,10 @@ public class LinkService {
     }
 
     public void deleteLinkById(Long id) {
-        linkRepository.deleteById(id);
+        if (linkRepository.findById(id).isPresent()) {
+            linkRepository.deleteById(id);
+        } else {
+            throw new LinkNotFoundException(String.format("Link of ID %s does not exists.", id));
+        }
     }
 }
