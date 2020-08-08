@@ -7,11 +7,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
 @RequestMapping(
-        value = "/api/links",
+        path = "/api/links",
         produces = MediaType.APPLICATION_JSON_VALUE
 )
 public class LinkController {
@@ -33,8 +34,8 @@ public class LinkController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Link> createLink(@RequestBody Link link) {
-        return ResponseEntity.ok(linkService.saveLink(link));
+    public ResponseEntity<Link> createLink(@RequestBody Link link, HttpServletRequest request) {
+        return ResponseEntity.ok(linkService.saveLink(link, request));
     }
 
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
