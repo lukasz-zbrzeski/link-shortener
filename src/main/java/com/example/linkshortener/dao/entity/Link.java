@@ -30,8 +30,8 @@ public class Link {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "expired_at")
-    private LocalDateTime expiredAt;
+    @Column(name = "expires_at")
+    private LocalDateTime expiresAt;
 
     @Column(name = "is_active")
     private boolean isActive;
