@@ -15,6 +15,8 @@ import java.util.Random;
 public class LinkService {
     private final LinkRepository linkRepository;
 
+    private static final String DIGITS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
     @Autowired
     public LinkService(LinkRepository linkRepository) {
         this.linkRepository = linkRepository;
@@ -25,13 +27,17 @@ public class LinkService {
     }
 
     public Link getLinkById(Long id) {
-        return linkRepository.findById(id).orElseThrow(() -> new LinkNotFoundException(String.format("Link of ID %s does not exists.", id)));
+        return linkRepository.findById(id)
+                .orElseThrow(() -> new LinkNotFoundException(String.format("Link of ID %s does not exists.", id)));
+    }
+
+    public Link getLinkByShortLink(String shortLink) {
+        return linkRepository.findByShortLink(shortLink)
+                .orElseThrow(() -> new LinkNotFoundException(String.format("Link %s does not exists.", shortLink)));
     }
 
     public Link saveLink(Link link, HttpServletRequest request) {
-        String serverPort = request.getServerName().equals("localhost") ? String.format(":%s", request.getServerPort()) : "";;
-        String shortLink = String.format("%s://%s%s/%s", request.getScheme(), request.getServerName(), serverPort, createShortLink());
-        link.setShortLink(shortLink);
+        link.setShortLink(createShortLink(request));
         link.setCreatedAt(LocalDateTime.now());
         link.setExpiresAt(LocalDateTime.now().plusMonths(1));
         link.setActive(true);
@@ -51,13 +57,17 @@ public class LinkService {
         }
     }
 
-    private String createShortLink() {
-        String digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    public String getShortLink(String uri, HttpServletRequest request) {
+        String serverPort = request.getServerName().equals("localhost") ? String.format(":%s", request.getServerPort()) : "";;
+        return String.format("%s://%s%s/%s", request.getScheme(), request.getServerName(), serverPort, uri);
+    }
+
+    private String createShortLink(HttpServletRequest request) {
         Random random = new Random();
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 5; i++) {
-            sb.append(digits.charAt(random.nextInt(digits.length())));
+            sb.append(DIGITS.charAt(random.nextInt(DIGITS.length())));
         }
-        return sb.toString();
+        return getShortLink(sb.toString(), request);
     }
 }
