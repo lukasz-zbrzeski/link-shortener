@@ -58,7 +58,9 @@ public class LinkService {
     }
 
     public String getShortLink(String uri, HttpServletRequest request) {
-        String serverPort = request.getServerName().equals("localhost") ? String.format(":%s", request.getServerPort()) : "";;
+        String serverPort = request.getServerName().equals("localhost") || request.getServerName().equals("127.0.0.1")
+                ? String.format(":%s", request.getServerPort())
+                : "";
         return String.format("%s://%s%s/%s", request.getScheme(), request.getServerName(), serverPort, uri);
     }
 
